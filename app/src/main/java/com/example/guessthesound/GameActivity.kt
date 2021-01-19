@@ -57,7 +57,7 @@ class GameActivity : AppCompatActivity() {
     private var questionIndex = 0
     private val numQuestions = 2
 
-    private val backsoundUrl = "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3" // your URL here
+    private val backsoundUrl = "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3"
     private var isBacksoundMute = false
 
     private lateinit var mediaPlayer: MediaPlayer
@@ -196,7 +196,8 @@ class GameActivity : AppCompatActivity() {
 
     override fun onStop() {
         super.onStop()
-        Log.i("MainActivity", "onStop")
+        handler.removeCallbacks(updateTime)
+        handler.removeCallbacks(updateProgress)
         pausePlayer(mediaPlayer)
         pausePlayer(questionPlayer)
     }
@@ -223,11 +224,9 @@ class GameActivity : AppCompatActivity() {
         }
     }
 
-    private fun pausePlayer(mp: MediaPlayer?) {
-        mp?.let {
-            if (it.isPlaying) {
-                it.pause()
-            }
+    private fun pausePlayer(mp: MediaPlayer) {
+        if (mp.isPlaying) {
+            mp.pause()
         }
     }
 
@@ -235,6 +234,7 @@ class GameActivity : AppCompatActivity() {
         if (mp.isPlaying) {
             mp.stop()
         }
+        mp.reset()
         mp.release()
     }
 
@@ -255,8 +255,6 @@ class GameActivity : AppCompatActivity() {
         pb_load_question.visibility = View.VISIBLE
     }
 
-    // Sets the question and randomizes the answers.  This only changes the data, not the UI.
-    // Calling invalidateAll on the FragmentGameBinding updates the data.
     private fun setQuestion() {
         currentQuestion = questions[questionIndex]
         hint.text = currentQuestion.answer
@@ -280,7 +278,6 @@ class GameActivity : AppCompatActivity() {
             setOnPreparedListener {
                 isQuestionPrepared = true
                 pb_load_question.visibility = View.GONE
-                Log.d("lalala", "duration: ${it.duration}")
                 tv_duration.text = milliSecondsToTimer(it.duration)
                 pb_player_timer.max = it.duration
                 showPlayButton()

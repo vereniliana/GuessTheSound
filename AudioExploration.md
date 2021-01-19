@@ -1,6 +1,6 @@
-#Audio Exploration
+# Audio Exploration
 
-##MediaPlayer (https://developer.android.com/guide/topics/media/mediaplayer)
+## MediaPlayer (https://developer.android.com/guide/topics/media/mediaplayer)
 
 An object of this class can fetch, decode, and play both audio and video with minimal setup. Full documentation for MediaPlayer class can be found [here](https://developer.android.com/reference/android/media/MediaPlayer).
 
