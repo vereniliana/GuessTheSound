@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">Guess the Sound</string>
+    <string name="text_title">Guess the Sound!</string>
+    <string name="btn_play">PLAY</string>
+    <string name="text_get_ready">Get ready to</string>
+    <string name="btn_submit">SUBMIT</string>
+    <string name="title_question">Guess the sound (%1$d/%2$d)</string>
+    <string name="text_win">YOU WIN!</string>
+    <string name="text_lose">GAME OVER</string>
+    <string name="text_play_again">PLAY AGAIN</string>
+    <string name="text_try_again">TRY AGAIN</string>
+    <string name="timer_zero">00:00</string>
+</resources>
