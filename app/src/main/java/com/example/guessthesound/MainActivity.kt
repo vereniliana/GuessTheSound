@@ -12,20 +12,18 @@ import java.io.IOException
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var mediaPlayer: MediaPlayer
+    private var mediaPlayer: MediaPlayer? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        mediaPlayer = MediaPlayer.create(this, R.raw.button)
-
         btn_play.setOnClickListener {
-            mediaPlayer.start()
+            mediaPlayer?.start()
             startActivity(Intent(this, GameActivity::class.java))
         }
 
-        mediaPlayer.setOnCompletionListener {
+        mediaPlayer?.setOnCompletionListener {
             it.release()
         }
     }
@@ -37,6 +35,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onStop() {
         super.onStop()
-        mediaPlayer.release()
+        mediaPlayer?.reset()
+        mediaPlayer?.release()
     }
 }
