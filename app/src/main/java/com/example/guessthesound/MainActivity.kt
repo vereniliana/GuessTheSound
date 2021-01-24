@@ -1,14 +1,12 @@
 package com.example.guessthesound
 
 import android.content.Intent
-import android.media.AudioAttributes
-import android.media.AudioManager
 import android.media.MediaPlayer
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
+import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
-import java.io.IOException
+
+const val NUM_QUESTIONS = "num_questions"
 
 class MainActivity : AppCompatActivity() {
 
@@ -20,7 +18,11 @@ class MainActivity : AppCompatActivity() {
 
         btn_play.setOnClickListener {
             mediaPlayer?.start()
-            startActivity(Intent(this, GameActivity::class.java))
+            val numQuestions = et_num_questions.text.toString().toInt()
+            startActivity(
+                Intent(this, LoadingActivity::class.java)
+                    .putExtra(NUM_QUESTIONS, numQuestions)
+            )
         }
 
         mediaPlayer?.setOnCompletionListener {

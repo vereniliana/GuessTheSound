@@ -87,5 +87,18 @@ Note: MediaPlayer has property `isPlaying` to check if it is in *Started* state,
 ### Cleanup
 A MediaPlayer can consume valuable system resources, so you should keep it only for as long as you need and call release() when you are done with it to make sure any system resources allocated to it are properly released.
 
+	mediaPlayer?.reset() // see note below
 	mediaPlayer?.release()
 	mediaPlayer = null
+
+**Note:**
+Without `reset()` method, you can still release properly with no error, but you will get warning like this:
+> W/MediaPlayer: mediaplayer went away with unhandled events
+
+When you call `reset()`, MediaPlayer is going back to uninitialized state (idle). This way you explicitly discard any unhandled event and the warning will not show up.
+
+### More about MediaPlayer
+
+If you want your media to play in the background even when your application is not onscreen, then you must start a Service and control the MediaPlayer instance from there. (This is usually implemented for music app such as Spotify, more explanation can be found [here](https://developer.android.com/guide/topics/media/mediaplayer#mpandservices))
+
+If you want your media to play continuously within the app but stop when application in the background, you can add LifeCycle to your app. More explanation can be found [here](https://stackoverflow.com/questions/54423895/keep-sound-playing-within-the-app-but-stop-it-when-app-goes-to-the-background/54433734#54433734)

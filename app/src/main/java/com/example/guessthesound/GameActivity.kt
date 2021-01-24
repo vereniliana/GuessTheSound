@@ -11,57 +11,17 @@ import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_game.*
-import java.lang.Exception
 
 const val GAME_RESULT_KEY = "game_result"
 
 class GameActivity : AppCompatActivity() {
 
-    data class Question(
-        val url: String,
-        val answer: String
-    )
-
-    private val questions: MutableList<Question> = mutableListOf(
-        Question(
-            url = "https://soundbible.com//mp3/labrador-barking-daniel_simon.mp3",
-            answer = "dog"
-        ),
-        Question(
-            url = "https://soundbible.com/mp3/Single%20Cow-SoundBible.com-2051754137.mp3",
-            answer = "cow"
-        ),
-        Question(
-            url = "https://soundbible.com/mp3/Frogs-Lisa_Redfern-1150052170.mp3",
-            answer = "frog"
-        ),
-        Question(
-            url = "https://soundbible.com/mp3/Cat_Meow_2-Cat_Stevens-2034822903.mp3",
-            answer = "cat"
-        ),
-        Question(
-            url = "https://soundbible.com/mp3/Horse%20Neigh-SoundBible.com-1740540960.mp3",
-            answer = "horse"
-        ),
-        Question(
-            url = "https://soundbible.com/mp3/Lion%20Roar-SoundBible.com-718441804.mp3",
-            answer = "lion"
-        ),
-        Question(
-            url = "https://soundbible.com/mp3/Rooster%20Crow-SoundBible.com-1802551702.mp3",
-            answer = "rooster"
-        )
-    )
-
     lateinit var currentQuestion: Question
     private var questionIndex = 0
-    private val numQuestions = 2
+    private var numQuestions = 2
+    private lateinit var questions: ArrayList<Question>
 
-    private val backsoundUrl = "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3"
     private var isBacksoundMute = false
-
-    private lateinit var mediaPlayer: MediaPlayer
-    private var isMediaPrepared: Boolean = false
 
     private lateinit var questionPlayer: MediaPlayer
     private var isQuestionPrepared: Boolean = false
@@ -73,35 +33,19 @@ class GameActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_game)
 
-        mediaPlayer = createPlayer()
+        questions = intent.getParcelableArrayListExtra(GAME_QUESTIONS) ?: ArrayList()
+        numQuestions = questions.size
+
         questionPlayer = createPlayer()
 
         buttonSfx = MediaPlayer.create(this, R.raw.button)
-        buttonSfx.setVolume(80F,80F)
 
-        // Shuffles the questions and sets the question index to the first question.
-        randomizeQuestions()
-
-        mediaPlayer.apply {
-            try {
-                setDataSource(backsoundUrl)
-                isLooping = true
-                setOnPreparedListener { mp ->
-                    isMediaPrepared = true
-                    mp.start()
-                }
-                prepareAsync()
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-        }
+        setQuestion()
 
         btn_play_question.setOnClickListener {
             if (isQuestionPrepared) {
                 showPauseButton()
-                if (mediaPlayer.isPlaying) {
-                    mediaPlayer.pause()
-                }
+                BacksoundManager.pause()
                 questionPlayer.start()
                 updateTime.run()
                 updateProgress.run()
@@ -112,8 +56,8 @@ class GameActivity : AppCompatActivity() {
             if (questionPlayer.isPlaying) {
                 showPlayButton()
                 questionPlayer.pause()
-                if (!isBacksoundMute && isMediaPrepared) {
-                    mediaPlayer.start()
+                if (!isBacksoundMute) {
+                    BacksoundManager.play()
                 }
             }
         }
@@ -121,18 +65,14 @@ class GameActivity : AppCompatActivity() {
         btn_mute.setOnClickListener {
             isBacksoundMute = true
             showUnmuteButton()
-            mediaPlayer.let {
-                if (it.isPlaying) {
-                    it.pause()
-                }
-            }
+            BacksoundManager.pause()
         }
 
         btn_unmute.setOnClickListener {
             isBacksoundMute = false
             showMuteButton()
-            if (!isBacksoundMute && isMediaPrepared) {
-                mediaPlayer.start()
+            if (!isBacksoundMute) {
+                BacksoundManager.play()
             }
         }
 
@@ -147,6 +87,7 @@ class GameActivity : AppCompatActivity() {
                     startActivity(
                         Intent(this, ResultActivity::class.java)
                             .putExtra(GAME_RESULT_KEY, 1)
+                            .putExtra(NUM_QUESTIONS, numQuestions)
                     )
                     finish()
                 }
@@ -154,6 +95,7 @@ class GameActivity : AppCompatActivity() {
                 startActivity(
                     Intent(this, ResultActivity::class.java)
                         .putExtra(GAME_RESULT_KEY, 0)
+                        .putExtra(NUM_QUESTIONS, numQuestions)
                 )
                 finish()
             }
@@ -189,8 +131,8 @@ class GameActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
-        if (!isBacksoundMute && isMediaPrepared) {
-            mediaPlayer.start()
+        if (!isBacksoundMute) {
+            BacksoundManager.play()
         }
     }
 
@@ -198,12 +140,12 @@ class GameActivity : AppCompatActivity() {
         super.onStop()
         handler.removeCallbacks(updateTime)
         handler.removeCallbacks(updateProgress)
-        pausePlayer(mediaPlayer)
+        BacksoundManager.pause()
         pausePlayer(questionPlayer)
     }
 
     override fun onDestroy() {
-        releasePlayer(mediaPlayer)
+        BacksoundManager.release()
         releasePlayer(questionPlayer)
         releasePlayer(buttonSfx)
         super.onDestroy()
@@ -236,13 +178,6 @@ class GameActivity : AppCompatActivity() {
         }
         mp.reset()
         mp.release()
-    }
-
-    // randomize the questions and set the first question
-    private fun randomizeQuestions() {
-        questions.shuffle()
-        questionIndex = 0
-        setQuestion()
     }
 
     private fun resetUI() {
@@ -286,8 +221,8 @@ class GameActivity : AppCompatActivity() {
                 tv_currentTime.text = milliSecondsToTimer(it.duration)
                 pb_player_timer.progress = it.duration
                 showPlayButton()
-                if (!isBacksoundMute && isMediaPrepared) {
-                    mediaPlayer.start()
+                if (!isBacksoundMute) {
+                    BacksoundManager.play()
                 }
             }
             setOnErrorListener { mp, what, extra ->

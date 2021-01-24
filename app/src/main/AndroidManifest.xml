@@ -11,7 +11,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.MaterialComponents.Light.DarkActionBar">
-        <activity android:name=".ResultActivity"></activity>
+        <activity android:name=".LoadingActivity" />
+        <activity android:name=".ResultActivity" />
         <activity android:name=".GameActivity" />
         <activity android:name=".MainActivity">
             <intent-filter>

@@ -2,10 +2,9 @@ package com.example.guessthesound
 
 import android.content.Intent
 import android.media.MediaPlayer
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.View
+import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_result.*
 
 class ResultActivity : AppCompatActivity() {
@@ -14,6 +13,7 @@ class ResultActivity : AppCompatActivity() {
         setContentView(R.layout.activity_result)
 
         val gameResult = intent.getIntExtra(GAME_RESULT_KEY, 0)
+        val numQuestions = intent.getIntExtra(NUM_QUESTIONS, 2)
         val mediaPlayer = MediaPlayer.create(this, R.raw.button)
 
         if (gameResult == 0) {
@@ -28,7 +28,10 @@ class ResultActivity : AppCompatActivity() {
 
         btn_play_again.setOnClickListener {
             mediaPlayer.start()
-            startActivity(Intent(this, GameActivity::class.java))
+            startActivity(
+                Intent(this, LoadingActivity::class.java)
+                    .putExtra(NUM_QUESTIONS, numQuestions)
+            )
             finish()
         }
 

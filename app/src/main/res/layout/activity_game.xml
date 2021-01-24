@@ -136,7 +136,8 @@
         android:id="@+id/tv_answer_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Jawaban: "
+        android:labelFor="@id/et_answer"
+        android:text="@string/label_answer"
         app:layout_constraintBottom_toTopOf="@id/et_answer"
         app:layout_constraintStart_toStartOf="@id/et_answer" />
 
@@ -145,9 +146,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="10dp"
-        android:autofillHints="answer"
+        android:importantForAutofill="no"
         android:inputType="text"
-        android:labelFor="@id/tv_answer_label"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

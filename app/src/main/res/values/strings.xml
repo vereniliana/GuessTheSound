@@ -10,4 +10,7 @@
     <string name="text_play_again">PLAY AGAIN</string>
     <string name="text_try_again">TRY AGAIN</string>
     <string name="timer_zero">00:00</string>
+    <string name="label_answer">Jawaban:</string>
+    <string name="default_num_questions">2</string>
+    <string name="label_num_questions">Number of questions:</string>
 </resources>
