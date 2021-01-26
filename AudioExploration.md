@@ -102,3 +102,27 @@ When you call `reset()`, MediaPlayer is going back to uninitialized state (idle)
 If you want your media to play in the background even when your application is not onscreen, then you must start a Service and control the MediaPlayer instance from there. (This is usually implemented for music app such as Spotify, more explanation can be found [here](https://developer.android.com/guide/topics/media/mediaplayer#mpandservices))
 
 If you want your media to play continuously within the app but stop when application in the background, you can add LifeCycle to your app. More explanation can be found [here](https://stackoverflow.com/questions/54423895/keep-sound-playing-within-the-app-but-stop-it-when-app-goes-to-the-background/54433734#54433734)
+
+### Progress
+You can track the audio progress using Runnable. This is the example:
+
+	private val updateProgress: Runnable = object : Runnable {
+		override fun run() {
+			val currentDuration: Int
+			if (player.isPlaying) {
+				currentDuration = player.currentPosition
+				progress_bar.progress = currentDuration
+				handler.postDelayed(this, 1000)
+			} else {
+				handler.removeCallbacks(this)
+			}
+		}
+	}
+
+Run it when you play the audio
+
+	updateProgress.run()
+
+and don't forget to remove it when you stop playing the audio
+
+	handler.removeCallbacks(updateProgress)
